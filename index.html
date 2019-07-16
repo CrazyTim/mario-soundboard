@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>Mario Soundboard</title>
+		<meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="robots" content="noindex, nofollow">
+		<link rel="manifest" href="manifest.json">
+		
+		<link rel="stylesheet" type="text/css" href="mario.style.css">
+		
+		<script src="mario.soundboard.js"></script>
+		<script src="howler.core.min.js"></script>
+		<script>
+			window.addEventListener('DOMContentLoaded', () => {
+				m = new MarioSoundboard();
+			});
+		</script>
+	</head>
+
+	<body>
+		<div id="loading-wrapper">
+			<img id="loading-icon" src="img/coin_nsmb.gif">
+		</div>
+
+		<div id="mario-wrapper">
+
+			<div id="menu-wrapper">
+				<div id="btn-pause"></div>
+			</div>
+
+			<div id="item-wrapper">
+				<div id="item-grid">
+				</div>
+			</div>
+
+		</div>
+	</body>
+
+</html>
