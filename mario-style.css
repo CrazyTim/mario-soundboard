@@ -1,10 +1,3 @@
-/*
-@font-face {
-  font-family: 'super_mario';
-  src: url('fonts/super_mario_maker_font.ttf') format('truetype');
-}
-*/
-
 @import url('https://fonts.googleapis.com/css?family=Quicksand:700');
 
 html, body, #mario-wrapper {
@@ -29,7 +22,6 @@ h1 {
   display: grid;
   grid-template-rows: auto 1fr;
 }
-
 
 #item-grid {
   display: grid;
@@ -99,7 +91,6 @@ h1 {
   top: 73px;
 }
 
-
 #loading-wrapper {
     display: grid;
     place-items: center;
@@ -137,4 +128,3 @@ h1 {
   overflow-y: scroll;
   padding-top: 10px;
 }
-
