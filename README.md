@@ -5,20 +5,21 @@
 
 # Mario Soundboard
 
-An unofficial sound-effects app. I made it so my kids could have more immersion when playing the [Monopoly Gamer board game](https://www.kotaku.com.au/2017/06/mario-themed-monopoly-gamerhas-power-ups-and-boss-battles). Collecting coins from the bank has never sounded so good!
+A fun unofficial sound-effects app. I made this so my kids could have sound-effects and music when playing the [Monopoly Gamer board game](https://boardgamegeek.com/boardgame/230408/monopoly-gamer). Collecting coins from the bank has never sounded so good!
 
-Its a great showcase of the amazing sounds and characters of the Mario franchise.
+Its a small showcase of the amazing sounds and icons of the Mario franchise.
 
 ## Acknowledgements
 
 ### Audio
-- https://themushroomkingdom.net/media/
-- https://www.sounds-resource.com/
-- http://www.videogamesoundboards.com/?s=mario
-- https://mfgg.net/
-- https://www.youtube.com/watch?v=sWDfNDKjj1Y
 - https://downloads.khinsider.com/mario
+- https://themushroomkingdom.net/media/
+- https://www.sounds-resource.com
+- http://www.videogamesoundboards.com/?s=mario
+- https://mfgg.net
+- https://www.youtube.com/watch?v=sWDfNDKjj1Y
 
 ### Images
+- https://www.mariowiki.com
 - https://mario.fandom.com/wiki/MarioWiki
-- https://www.mariowiki.com/
+- https://www.mariowiki.com
