@@ -199,13 +199,13 @@ export default class MarioSoundboard {
 
     // don't allow certain clips to play concurrently
     let preventConcurrent = [
-      ['mega mushroom', 'star'],
+      ['mega-mushroom', 'super-star','wing-cap'],
     ];
 
     preventConcurrent.forEach(arr => {
-      if (arr.includes(i.displayName)) {
+      if (arr.includes(i.fileName)) {
          this.items.forEach(item => {
-           if (item !== i && arr.includes(item.displayName)) {
+           if (item !== i && arr.includes(item.fileName)) {
              item.clip.stop();
            }
          });
