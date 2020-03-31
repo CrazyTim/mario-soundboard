@@ -9,6 +9,8 @@ A fun unofficial sound-effects app. I made this so my kids could have sound-effe
 
 Its a small showcase of the amazing sounds and icons of the Mario franchise.
 
+View the [live version here](https://crazytim.github.io/mario-soundboard/).
+
 ## Acknowledgements
 
 ### Audio
