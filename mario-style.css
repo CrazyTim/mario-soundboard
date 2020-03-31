@@ -55,10 +55,10 @@ h1 {
 .btn:after {
   position: absolute;
   content: " ";
-  height: 65px;
-  width: 65px;
-  top: -5px;
-  left: -5px;
+  height: 67px;
+  width: 67px;
+  top: -6px;
+  left: -6px;
   display: inline-block;
   border: 5px solid transparent;
   border-radius: 70px;
@@ -67,6 +67,10 @@ h1 {
 
 .btn[playing=true]:after {
   border-color: #fbea1bd6;
+}
+
+.btn[playing=true]{
+  border-color: #939da5;
 }
 
 .icon_set {
