@@ -40,6 +40,7 @@ export default class MarioSoundboard {
       }
 
       i.isPlaying = false;
+      i.isPlayingSpriteLoop = false; // we have finished playing the 'intro' sprite and we are now playing the 'loop' sprite
 
       i.render = () => {
         if (i.isPlaying) {
@@ -55,7 +56,7 @@ export default class MarioSoundboard {
 
       if (i.play == null) {
         if (i.sprite !== null && i.sprite.hasOwnProperty('loop') && i.sprite.hasOwnProperty('__default') ) {
-          // play the '__default' sprite (the intro) and then play the 'loop' sprite
+          // play the '__default' sprite (the intro), followed by the 'loop' sprite
 
           i.clip = new Howl({
             src: ['audio/' + i.fileName + '.' + i.format],
@@ -69,11 +70,15 @@ export default class MarioSoundboard {
 
           i.clip.on('stop', () => {
             i.isPlaying = false;
+            i.isPlayingSpriteLoop = false;
             i.render();
           });
 
           i.clip.on('end', () => {
-            i.clip.play('loop');
+            if (!i.isPlayingSpriteLoop) {
+              i.isPlayingSpriteLoop = true;
+              i.clip.play('loop');
+            }
           });
 
         } else if (i.count == 0) {

@@ -81,6 +81,10 @@ export default [
     fileName: 'wing-cap',
     displayName: 'wing cap',
     restartWhenClicked: false,
+    sprite: {
+      __default: [50, 7363, false],
+      loop: [7363, 17800, true],
+    },
   },
   {
     fileName: 'red-shell',
@@ -105,7 +109,7 @@ export default [
       src: ['audio/item-box-roulette.ogg'],
       loop: true,
       sprite:{
-        __default:[0, 720, true] // trim silence in mp3 file
+        __default:[0, 720, true]
       }
     }),
     clip2: new Howl({
@@ -341,7 +345,7 @@ export default [
     isMusic: true,
     imgFileName: 'music-smb3-theme.png',
     sprite: {
-      __default: [150, END_OF_FILE, true], // trim silence in mp3 file
+      __default: [150, END_OF_FILE, true],
     },
   },
   {
@@ -391,7 +395,7 @@ export default [
     isMusic: true,
     imgFileName: 'music.png',
     sprite: {
-      __default: [670, END_OF_FILE, true], // trim silence in mp3 file
+      __default: [670, END_OF_FILE, true],
     },
   },
   {
