@@ -1,5 +1,7 @@
 import {getRandomInt} from './mario-util.js'
 
+const END_OF_FILE = 9999999;
+
 export default [
   {
     fileName: 'coin',
@@ -20,7 +22,7 @@ export default [
   {
     fileName: 'stomp',
     displayName: 'stomp',
-    imgUrl: null,
+    imgFileName: 'music.png',
   },
   {
     fileName: 'mario-propeller-suit-fly',
@@ -42,7 +44,7 @@ export default [
   {
     fileName: 'death',
     displayName: 'death',
-    imgUrl: null,
+    imgFileName: 'music.png',
   },
   {
     fileName: 'sprout',
@@ -55,7 +57,7 @@ export default [
   {
     fileName: 'powerdown',
     displayName: 'powerdown',
-    imgUrl: null,
+    imgFileName: 'music.png',
   },
   {
     fileName: '1up',
@@ -66,7 +68,6 @@ export default [
     displayName: 'star',
     restartWhenClicked: false,
     loop: true,
-    icon: true,
     format: 'ogg',
   },
   {
@@ -74,8 +75,12 @@ export default [
     displayName: 'mega mushroom',
     restartWhenClicked: false,
     loop: true,
-    icon: true,
     format: 'ogg',
+  },
+  {
+    fileName: 'wing-cap',
+    displayName: 'wing cap',
+    restartWhenClicked: false,
   },
   {
     fileName: 'red-shell',
@@ -94,58 +99,49 @@ export default [
   {
     fileName: 'item-box-roulette',
     displayName: 'item box roulette',
-    imgUrl: null,
+    imgFileName: 'item-box.png',
     restartWhenClicked: false,
     clip: new Howl({
       src: ['audio/item-box-roulette.ogg'],
       loop: true,
       sprite:{
-        one:[0,720,true]
+        __default:[0, 720, true] // trim silence in mp3 file
       }
     }),
     clip2: new Howl({
       src: ['audio/item-box-roulette-finish.ogg']
     }),
-    onPlay: function () {
-      // item roulete sound: loop roulete sound for a random time between 2-5 seconds, then play finish sound.
+    play: function () {
+
       let i = this;
 
-      //console.log('play');
-      //console.log(ii);
-
-      i.clip2.once('end', () => {
-        //console.log('end');
-        i.playing -= 1;
-        if (i.playing == 0) {
-          i.btn.setAttribute('playing', 'false');
-        }
-      });
-
-      let duration = getRandomInt(1200,5000);
-
+      // play clip1 on loop for a random duration between 1.2-5 seconds, then play finish sound.
       i.playAudioInterval = setTimeout(() => {
-        //console.log('timeout');
         i.clip.stop();
         i.clip2.play();
-      }, duration);
+      }, getRandomInt(1200,5000) );
 
-      i.clip.play('one');
-      },
-    onStop: function () {
-      let ii = this;
+      i.clip2.once('end', () => {
+        i.isPlaying = false;
+        i.render();
+      });
 
-      //console.log('stop');
-      //console.log(ii);
+      i.isPlaying = true;
+      i.render();
 
-      i.playing -= 1;
-      if (i.playing == 0) {
-        i.btn.setAttribute('playing', 'false');
-      }
+      i.clip.play();
+
+    },
+    stop: function () {
+
+      let i = this;
+
+      i.isPlaying = false;
+      i.render();
 
       clearTimeout(i.playAudioInterval);
       i.clip.stop();
       i.clip2.stop();
-
       i.clip2.off(); // remove end event
 
     },
@@ -159,13 +155,13 @@ export default [
     displayName: 'count-</br>down',
     restartWhenClicked: false,
     isMusic: true,
-    icon: true,
   },
   {
     fileName: 'race-start-mk64',
     displayName: 'race start',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
   },
   {
     fileName: 'clapping',
@@ -181,30 +177,35 @@ export default [
     displayName: 'victory<br>nsmbwii',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
   },
   {
     fileName: 'music-smw-course-clear',
     displayName: 'level clear<br>smw',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
   },
   {
     fileName: 'music-nsmbwii-level-clear',
     displayName: 'level clear<br>nsmbwii',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
   },
   {
     fileName: 'hurry-up',
     displayName: 'Hurry Up',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
   },
   {
     fileName: 'music-smb-game-over',
     displayName: 'game over<br>smb',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'game-over.png',
     format: 'ogg',
   },
   {
@@ -212,12 +213,14 @@ export default [
     displayName: 'game over<br>smb3',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'game-over.png',
   },
   {
     fileName: 'music-smw-game-over',
     displayName: 'game over<br>smw',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'game-over.png',
   },
   {
     fileName: 'pow',
@@ -321,45 +324,82 @@ export default [
   },
   {
     fileName: 'music-smb3-overworld',
-    displayName: 'SMB3 Theme',
+    displayName: 'theme<br>SMB3',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music-smb3-theme.png',
     loop: true,
+    sprite: {
+      __default: [60, 3400, false],
+      loop: [3400, END_OF_FILE, true],
+    },
+  },
+  {
+    fileName: 'music-smb3-grass-land',
+    displayName: 'grass land<br>SMB3',
+    restartWhenClicked: false,
+    isMusic: true,
+    imgFileName: 'music-smb3-theme.png',
+    sprite: {
+      __default: [150, END_OF_FILE, true], // trim silence in mp3 file
+    },
   },
   {
     fileName: 'music-smb-overworld',
-    displayName: 'SMB Theme',
+    displayName: 'theme<br>smb',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music-smb-theme.png',
     loop: true,
   },
   {
     fileName: 'music-smw-overworld',
-    displayName: 'Theme<br>SMW',
+    displayName: 'theme<br>SMW',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music-smw-theme.png',
     loop: true,
   },
   {
-    fileName: 'music-smw-overworld1',
-    displayName: 'Theme 2<br>SMW',
+    fileName: 'music-smw-overworld-2',
+    displayName: 'theme 2<br>SMW',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music-smw-theme.png',
     loop: true,
   },
   {
     fileName: 'music-mkwii-theme',
-    displayName: 'Theme<br>mkwii',
+    displayName: 'theme<br>mkwii',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music-mkwii-theme.png',
     loop: true,
-    imgUrl: 'img/items/music-mkwii-theme.png',
+  },
+  {
+    fileName: 'music-sm64-theme',
+    displayName: 'theme<br>sm64',
+    restartWhenClicked: false,
+    isMusic: true,
+    imgFileName: 'music.png',
+    loop: true,
+  },
+  {
+    fileName: 'music-sm64-dire-dire-docks',
+    displayName: 'Dire, Dire<br>Docks sm64',
+    restartWhenClicked: false,
+    isMusic: true,
+    imgFileName: 'music.png',
+    sprite: {
+      __default: [670, END_OF_FILE, true], // trim silence in mp3 file
+    },
   },
   {
     fileName: 'music-mkwii-funky-stadium',
     displayName: 'funky stadium<br>mkwii',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
     format: 'ogg',
   },
@@ -368,6 +408,7 @@ export default [
     displayName: 'moo moo<br>meadows mkwii',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
   },
   {
@@ -375,13 +416,7 @@ export default [
     displayName: 'the canyon<br>NSMB',
     restartWhenClicked: false,
     isMusic: true,
-    loop: true,
-  },
-  {
-    fileName: 'music-sm64-theme',
-    displayName: 'theme<br>sm64',
-    restartWhenClicked: false,
-    isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
   },
   {
@@ -389,6 +424,7 @@ export default [
     displayName: 'electro-<br>drome mk8',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
     format: 'ogg',
   },
@@ -397,6 +433,7 @@ export default [
     displayName: 'sunshine<br>airport mk8',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
   },
   {
@@ -404,6 +441,7 @@ export default [
     displayName: 'bone dry<br>dunes mk8',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
   },
   {
@@ -411,14 +449,16 @@ export default [
     displayName: 'Walking the plains<br>nsmb',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
     format: 'ogg',
   },
   {
     fileName: 'music-nsmb-in-the-underground',
-    displayName: 'in the underground<br>nsmb',
+    displayName: 'under-<br>ground<br>nsmb',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
   },
   {
@@ -426,6 +466,7 @@ export default [
     displayName: 'troopa battle<br>nsmbwii',
     restartWhenClicked: false,
     isMusic: true,
+    imgFileName: 'music.png',
     loop: true,
   },
 ];

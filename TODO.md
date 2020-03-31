@@ -9,8 +9,8 @@
 - give items hidden 'tags', and add ability to filter on tags.
 
 ## issues:
-- item box roulette button doesn't highlight when you click it.
+- initial load is slow.
 - missing icons.
 - rosalina sounds are too quiet compared to the others.
 - should combine 'game over' music and the 'death' sound effect?
-- convert all sounds from mp3 to webM (?) (so they don't have blank space at the beginning).
+- probably can't play .oog files on safari

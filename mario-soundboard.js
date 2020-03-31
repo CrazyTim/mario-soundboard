@@ -30,103 +30,131 @@ export default class MarioSoundboard {
       if (typeof i.count == 'undefined') { i.count = 0; }  // number of clips in the set
       if (typeof i.loop == 'undefined') { i.loop = false; }
       if (typeof i.displayName == 'undefined') { i.displayName = null; }
-      if (typeof i.icon == 'undefined') { i.icon = false; }
-      if (typeof i.onPlay == 'undefined') { i.onPlay = null; }
+      if (typeof i.play == 'undefined') { i.play = null; }
       if (typeof i.format == 'undefined') { i.format = 'mp3'; }
-      if (typeof i.imgUrl == 'undefined') {
-        if (i.isMusic && !i.icon) {
-          i.imgUrl = 'img/music-green.png';// generic music icon
-        } else {
-          i.imgUrl = 'img/items/' + i.fileName + '.png';
-        }
+      if (typeof i.sprite == 'undefined') { i.sprite = null; }
+      if (typeof i.imgFileName == 'undefined') {
+        i.imgFileName = 'img/items/' + i.fileName + '.png';
+      } else if (i.imgFileName != null) {
+        i.imgFileName = 'img/items/' + i.imgFileName;
       }
 
-      i.isPlaying = () => {
+      i.isPlaying = false;
 
-        if (typeof i.clip != "undefined") {
-          if (i.clip.playing()) return true;
+      i.render = () => {
+        if (i.isPlaying) {
+          i.btn.setAttribute('playing', 'true');
         } else {
-          i.clips.forEach(item => {
-             if (item.playing()) return true;
-          });
+          i.btn.setAttribute('playing', 'false');
         }
-
-        return false
-
       }
 
       //console.log(key + ': ' + i.fileName + '.' + i.format);
 
-      // set clip
-      if (i.count == 0 && i.onPlay == null) {
+      // set play|stop|end events...
 
-        i.clip = new Howl({
-          src: ['audio/' + i.fileName + '.' + i.format],
-          loop: i.loop
-        })
+      if (i.play == null) {
+        if (i.sprite !== null && i.sprite.hasOwnProperty('loop') && i.sprite.hasOwnProperty('__default') ) {
+          // play the '__default' sprite (the intro) and then play the 'loop' sprite
 
-        i.clip.on('play', () => {
-          this._renderItem(i);
-        });
+          i.clip = new Howl({
+            src: ['audio/' + i.fileName + '.' + i.format],
+            sprite: i.sprite,
+          })
 
-        i.clip.on('stop', () => {
-          this._renderItem(i);
-        });
+          i.clip.on('play', () => {
+            i.isPlaying = true;
+            i.render();
+          });
 
-        // event for when it stops playing because it reached the end of the clip
-        if (!i.loop) {
+          i.clip.on('stop', () => {
+            i.isPlaying = false;
+            i.render();
+          });
+
           i.clip.on('end', () => {
-            //console.log(key + ': end');
+            i.clip.play('loop');
+          });
+
+        } else if (i.count == 0) {
+          // single clip
+
+          i.clip = new Howl({
+            src: ['audio/' + i.fileName + '.' + i.format],
+            loop: i.loop,
+            sprite: i.sprite,
+          })
+
+          i.clip.on('play', () => {
+            i.isPlaying = true;
+            i.render();
+          });
+
+          i.clip.on('stop', () => {
+            i.isPlaying = false;
+            i.render();
+          });
+
+          i.clip.on('end', () => {
             if (this.activeMusicClip == i.clip) {
               this.activeMusicClip = null;
             }
-            this._renderItem(i);
+            i.isPlaying = false;
+            i.render();
           });
+
+        } else if (i.count >= 0) {
+          // mulitple clips
+
+          i.next = util.fillArrayWithNumbers(i.count);
+          i.clips = util.fillArrayWithNumbers(i.count);
+
+          i.next.forEach((set_value, set_key) => {
+
+            i.clips[set_key] = new Howl({
+              src: ['audio/' + i.fileName + '/' + set_value + '.' + i.format],
+              loop: i.loop
+            })
+
+            i.clips[set_key].on('play', () => {
+              i.isPlaying = true;
+              i.render();
+            });
+
+            i.clips[set_key].on('stop', () => {
+              i.isPlaying = false;
+              i.render();
+            });
+
+            i.clips[set_key].on('end', () => {
+              i.isPlaying = false;
+              i.render();
+            });
+
+          });
+
         }
-
-      } else if (i.count >= 0 && i.onPlay == null) {
-
-        i.next = util.fillArrayWithNumbers(i.count);
-        i.clips = util.fillArrayWithNumbers(i.count);
-
-        i.next.forEach((set_value, set_key) => {
-          i.clips[set_key] = new Howl({
-            src: ['audio/' + i.fileName + '/' + set_value + '.' + i.format],
-            loop: i.loop
-          })
-
-          i.clips[set_key].on('play', () => {
-            this._renderItem(i);
-          });
-
-          i.clips[set_key].on('stop', () => {
-            this._renderItem(i);
-          });
-
-          i.clips[set_key].on('end', () => {
-            this._renderItem(i);
-          });
-
-        });
       }
 
       // create DOM object
       const btn = document.createElement("div");
       i.btn = btn;
       btn.setAttribute('class', 'btn');
-      btn.onclick = () => { this._play(key) };
+      btn.onclick = () => {
+        this._play(key)
+      };
       this.wrapper.appendChild(btn);
 
       // set the img
-      if (i.imgUrl != null) {
+      if (i.imgFileName != null) {
 
-        btn.setAttribute('style', 'background-image: url(' + i.imgUrl + ')');
+        btn.setAttribute('style', 'background-image: url(' + i.imgFileName + ')');
 
         // load the img
         const img = new Image();
         this.imgCount++;
         img.onload = () => { this._imgLoaded(); }
-        img.src = i.imgUrl;
+        img.src = i.imgFileName;
 
       }
 
@@ -185,7 +213,7 @@ export default class MarioSoundboard {
     }
 
     // stop the clip if it is currently playing
-    if (i.isPlaying()) {
+    if (i.isPlaying) {
 
       if (this.activeMusicClip == i.clip) {
         this.activeMusicClip = null;
@@ -196,8 +224,8 @@ export default class MarioSoundboard {
 
       } else {
 
-        if (i.onStop != null) {
-          i.onStop(i);
+        if (i.stop != null) {
+          i.stop();
         } else {
           i.clip.stop();
         }
@@ -213,8 +241,8 @@ export default class MarioSoundboard {
       i.clip = i.clips[ranIndex];
     }
 
-    if (i.onPlay != null) {
-      i.onPlay(i);
+    if (i.play != null) {
+      i.play();
     } else {
       i.clip.play();
     }
@@ -247,16 +275,6 @@ export default class MarioSoundboard {
     i.last = ri; // remember which one we played last so we don't play it twice in a row after reseting the set
 
     return ri;
-
-  }
-
-  _renderItem(item) {
-
-    if (item.isPlaying()) {
-      item.btn.setAttribute('playing', 'true');
-    } else {
-      item.btn.setAttribute('playing', 'false');
-    }
 
   }
 
