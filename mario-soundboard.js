@@ -144,7 +144,7 @@ export default class MarioSoundboard {
         }
       }
 
-      // create DOM object
+      // create button
       const btn = document.createElement("div");
       i.btn = btn;
       btn.setAttribute('class', 'btn');
@@ -153,32 +153,31 @@ export default class MarioSoundboard {
       };
       this.wrapper.appendChild(btn);
 
-      // set the img
+      // set and load the img
       if (i.imgFileName != null) {
 
         btn.setAttribute('style', 'background-image: url(' + i.imgFileName + ')');
 
-        // load the img
-        const img = new Image();
+        const el = new Image();
         this.imgCount++;
-        img.onload = () => { this._imgLoaded(); }
-        img.src = i.imgFileName;
+        el.onload = () => { this._imgLoaded(); }
+        el.src = i.imgFileName;
 
       }
 
-      // show title
+      // create title
       if (i.displayName != null) {
-        const title = document.createElement("div");
-        title.setAttribute('class', 'title');
-        title.innerHTML = i.displayName.toUpperCase();
-        btn.appendChild(title);
+        const el = document.createElement("div");
+        el.setAttribute('class', 'title');
+        el.innerHTML = i.displayName.toUpperCase();
+        btn.appendChild(el);
       }
 
-      // show set icon
+      // create 'set' icon
       if (i.count >= 1) {
-        const set_icon = document.createElement("div");
-        set_icon.setAttribute('class', 'icon_set');
-        btn.appendChild(set_icon);
+        const el = document.createElement("div");
+        el.setAttribute('class', 'icon_set');
+        btn.appendChild(el);
       }
 
     });
