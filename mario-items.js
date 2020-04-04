@@ -69,6 +69,7 @@ export default [
     restartWhenClicked: false,
     loop: true,
     format: 'ogg',
+    isMusic: true,
   },
   {
     fileName: 'mega-mushroom',
@@ -76,6 +77,7 @@ export default [
     restartWhenClicked: false,
     loop: true,
     format: 'ogg',
+    isMusic: true,
   },
   {
     fileName: 'wing-cap',
@@ -85,6 +87,7 @@ export default [
       __default: [50, 7363, false],
       loop: [7363, 17800, true],
     },
+    isMusic: true,
   },
   {
     fileName: 'red-shell',
@@ -158,7 +161,6 @@ export default [
     fileName: 'countdown',
     displayName: 'count-</br>down',
     restartWhenClicked: false,
-    isMusic: true,
   },
   {
     fileName: 'race-start-mk64',
