@@ -27,18 +27,19 @@ h1 {
 #item-grid {
   display: grid;
   grid-template-columns: repeat( auto-fit, minmax( 80px, 1fr ) );
-  gap: 5px;
+  gap: 2px;
   justify-items:  center;
   padding-bottom: 20px;
 }
 
-.btn {
+.btn-wrapper {
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+}
 
+.btn {
   margin: 5px;
-  margin-bottom: 50px;
   height: 65px;
   width: 65px;
   background-size: contain;
@@ -48,30 +49,53 @@ h1 {
   cursor: pointer;
   border-radius: 60px;
   position: relative;
-  background-color: #f5f5f58f;
+  background-color: #f9f9f9;
   border: solid 1px #d2d2d2;
+  transition: transform .1s;
+  transition-timing-function: ease-out;
+  z-index: 3;
 }
 
-.btn:after {
+.btn-wrapper.playing .btn {
+  /* transform: scale(0.95); */
+}
+
+.btn-ring {
   position: absolute;
-  content: " ";
-  height: 67px;
-  width: 67px;
-  top: -6px;
-  left: -6px;
-  display: inline-block;
-  border: 5px solid transparent;
-  border-radius: 70px;
-  transition: border-color 0.1s;
+  height: 77px;
+  width: 77px;
+  border-radius: 45px;
+  opacity: 0;
+  transition: opacity .1s;
+  transition-timing-function: ease-out;
+  background-color: #fbea1bd6;
+  z-index: 1;
 }
 
-.btn[playing=true]:after {
-  border-color: #fbea1bd6;
+.btn-wrapper.playing .btn-ring {
+  opacity: 1;
 }
 
-.btn[playing=true]{
-  border-color: #939da5;
+.progress-bar {
+  position: absolute;
+  width: 77px;
+  height: 77px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .1s;
 }
+
+  .progress-bar .foreground {
+    stroke: #ff676757;
+    stroke-dashoffset: 10px;
+    stroke-width: 4px;
+    fill: none;
+    transform-origin: 50% 50%;
+    transform: rotate(-90deg);
+    transition: stroke-dashoffset 0.05s;
+    transition-timing-function: linear;
+  }
 
 .icon_set {
   position: absolute;
@@ -89,11 +113,16 @@ h1 {
 }
 
 .title {
-  position: absolute;
   font-weight: bold;
   font-size: 11px;
   text-align: center;
   top: 73px;
+  display: flex;
+  align-self: center;
+  height: 42px;
+  margin: 0px 5px;
+  align-self: center;
+  z-index: 4;
 }
 
 #loading-wrapper {

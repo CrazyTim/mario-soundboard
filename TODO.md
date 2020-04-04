@@ -4,7 +4,6 @@
   - thwomp 'stomp'.
   - star coin.
   - floor switch.
-- music items should show how much time is remaining - show a circular animated progress line (svg?) inside the button's border.
 - group sounds into playlists.
 - give items hidden 'tags', and add ability to filter on tags.
 - Stop all button.

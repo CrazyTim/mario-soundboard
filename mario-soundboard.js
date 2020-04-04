@@ -44,9 +44,9 @@ export default class MarioSoundboard {
 
       i.render = () => {
         if (i.isPlaying) {
-          i.btn.setAttribute('playing', 'true');
+          i.btn.parentElement.classList.add('playing');
         } else {
-          i.btn.setAttribute('playing', 'false');
+          i.btn.parentElement.classList.remove('playing');
         }
       }
 
@@ -62,17 +62,20 @@ export default class MarioSoundboard {
             html5: true, // don't wait for the full file to be downloaded and decoded before playing
             src: ['audio/' + i.fileName + '.' + i.format],
             sprite: i.sprite,
+            onload: () => { this._soundLoaded(i); },
           })
 
           i.clip.on('play', () => {
             i.isPlaying = true;
             i.render();
+            this._initaliseProgressBar(i)
           });
 
           i.clip.on('stop', () => {
             i.isPlaying = false;
             i.isPlayingSpriteLoop = false;
             i.render();
+            this._resetProgressBar(i);
           });
 
           i.clip.on('end', () => {
@@ -90,16 +93,19 @@ export default class MarioSoundboard {
             src: ['audio/' + i.fileName + '.' + i.format],
             loop: i.loop,
             sprite: i.sprite,
+            onload: () => { this._soundLoaded(i); },
           })
 
           i.clip.on('play', () => {
             i.isPlaying = true;
             i.render();
+            this._initaliseProgressBar(i)
           });
 
           i.clip.on('stop', () => {
             i.isPlaying = false;
             i.render();
+            this._resetProgressBar(i);
           });
 
           i.clip.on('end', () => {
@@ -108,6 +114,7 @@ export default class MarioSoundboard {
             }
             i.isPlaying = false;
             i.render();
+            this._clearProgressBar(i);
           });
 
         } else if (i.count >= 0) {
@@ -144,14 +151,24 @@ export default class MarioSoundboard {
         }
       }
 
+      // create button wrapper
+      const btnWrapper = document.createElement("div");
+      btnWrapper.classList.add('btn-wrapper');
+      this.wrapper.appendChild(btnWrapper);
+
+      // create the highlight behind the button
+      const btnRing = document.createElement("div");
+      btnRing.classList.add('btn-ring');
+      btnWrapper.appendChild(btnRing);
+
       // create button
       const btn = document.createElement("div");
       i.btn = btn;
-      btn.setAttribute('class', 'btn');
+      btn.classList.add('btn');
       btn.onclick = () => {
         this._play(key)
       };
-      this.wrapper.appendChild(btn);
+      btnWrapper.appendChild(btn);
 
       // set and load the img
       if (i.imgFileName != null) {
@@ -168,15 +185,15 @@ export default class MarioSoundboard {
       // create title
       if (i.displayName != null) {
         const el = document.createElement("div");
-        el.setAttribute('class', 'title');
+        el.classList.add('title');
         el.innerHTML = i.displayName.toUpperCase();
-        btn.appendChild(el);
+        btnWrapper.appendChild(el);
       }
 
       // create 'set' icon
       if (i.count >= 1) {
         const el = document.createElement("div");
-        el.setAttribute('class', 'icon_set');
+        el.classList.add('icon_set');
         btn.appendChild(el);
       }
 
@@ -193,6 +210,57 @@ export default class MarioSoundboard {
       this.loading_wrapper.classList.add('hidden');
       this.container.classList.remove('hidden');
     }
+  }
+
+  _soundLoaded(i) {
+    if(i.clip.duration() <= 0.5) return;
+    // create progress bar
+    const el = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+    el.setAttribute('viewBox', '0 0 36 36');
+    el.classList.add('progress-bar');
+    el.innerHTML = `<circle class='foreground' r='16' cx='18' cy='18'  stroke-dasharray='100.53096 100.53096'/>`;
+    i.btn.parentElement.appendChild(el);
+  }
+
+  _initaliseProgressBar(i) {
+    const prog = i.btn.parentElement.querySelector('.progress-bar');
+    if (!prog) return;
+    this._resetProgressBar(i);
+
+    i.progressBarInterval = setTimeout(() => { // wait until the change has been rendered
+      prog.style.opacity ='1';
+
+      i.progressBarInterval = setInterval(() => {
+        this._setProgressBar(i);
+      },50);
+
+    },100);
+  }
+
+  _setProgressBar(i) {
+    const prog = i.btn.parentElement.querySelector('.progress-bar');
+    if (!prog) return;
+    const percentage = (i.clip.seek() / (i.clip.duration()-0.05) * 100); // minus a small amount of time to account for silence at the ends of mp3 files
+    prog.querySelector('.foreground').style.strokeDashoffset = 100 - Math.min(percentage, 100);
+    //console.log(i.clip.duration() + ', ' + percentage);
+  }
+
+  _clearProgressBar(i) {
+    const prog = i.btn.parentElement.querySelector('.progress-bar');
+    if (!prog) return;
+    clearInterval(i.progressBarInterval);
+    prog.querySelector('.foreground').style.strokeDashoffset = 0; // 100%
+    i.progressBarInterval = setTimeout(() => { // give time for the (subtle) transition animation to finish
+      this._resetProgressBar(i)
+    },100);
+  }
+
+  _resetProgressBar(i) {
+    const prog = i.btn.parentElement.querySelector('.progress-bar');
+    if (!prog) return;
+    clearInterval(i.progressBarInterval);
+    prog.style.opacity ='0';
+    prog.querySelector('.foreground').style.strokeDashoffset = 100; // 0%
   }
 
   _play(itemIndex) {
