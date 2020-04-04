@@ -59,6 +59,7 @@ export default class MarioSoundboard {
           // play the '__default' sprite (the intro), followed by the 'loop' sprite
 
           i.clip = new Howl({
+            html5: true, // don't wait for the full file to be downloaded and decoded before playing
             src: ['audio/' + i.fileName + '.' + i.format],
             sprite: i.sprite,
           })
@@ -85,6 +86,7 @@ export default class MarioSoundboard {
           // single clip
 
           i.clip = new Howl({
+            html5: true, // don't wait for the full file to be downloaded and decoded before playing
             src: ['audio/' + i.fileName + '.' + i.format],
             loop: i.loop,
             sprite: i.sprite,
@@ -117,6 +119,7 @@ export default class MarioSoundboard {
           i.next.forEach((set_value, set_key) => {
 
             i.clips[set_key] = new Howl({
+              html5: true, // don't wait for the full file to be downloaded and decoded before playing
               src: ['audio/' + i.fileName + '/' + set_value + '.' + i.format],
               loop: i.loop
             })
