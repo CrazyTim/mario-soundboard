@@ -4,10 +4,8 @@
   - thwomp 'stomp'.
   - star coin.
   - floor switch.
-- group sounds into playlists.
-- give items hidden 'tags', and add ability to filter on tags.
 - Stop all button.
-- Game Modes? When play star, stop music, but only if not Mario kart mode :(
+- Allow user to switch between different game modes (tags on items). Only show sounds from certain games. Each game mode can have its own rules, eg: when play star, stop music, but only if not Mario kart mode.
 
 ## issues:
 - initial load is slow.

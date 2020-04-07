@@ -1,32 +1,27 @@
 import * as util from './mario-util.js'
 import items from './mario-items.js'
+import itemGroups from './mario-groups.js'
 
 export default class MarioSoundboard {
 
-  constructor(settings) {
+  constructor() {
 
-    this.container = document.getElementById("mario-wrapper");
+    this.container = document.querySelector("#content-wrapper");
     this.container.classList.add('hidden');
-    this.loading_wrapper = document.getElementById("loading-wrapper");
-    this.wrapper = document.getElementById("item-grid");
+    this.loading_wrapper = document.querySelector("#loading-wrapper");
+    this.wrapper = document.querySelector("#item-wrapper");
 
-    this.items = items;               //
+    this.items = items;
+    this.itemGroups = itemGroups;
     this.activeMusicClip = null;      // don't allow playing more than one 'music' clip at a time
     this.imgCount = 0;                // number of images we are loading
     this.imgLoadedCount = 0;          // number of images we have loaded so far
 
-    this._ini();
+     // set default values for each item if undefined
+    Object.values(this.items).forEach((i) => {
 
-  }
-
-  _ini() {
-
-    // initalise each item
-    Object.values(this.items).forEach((i, key) => {
-
-      // set default values if undefined
       if (typeof i.restartWhenClicked == 'undefined') { i.restartWhenClicked = true; } // if the clip is currently playing when the btn is clicked, restart the clip, otherwise stop it
-      if (typeof i.isMusic == 'undefined') { i.music = false; }
+      if (typeof i.isMusic == 'undefined') { i.isMusic = false; }
       if (typeof i.count == 'undefined') { i.count = 0; }  // number of clips in the set
       if (typeof i.loop == 'undefined') { i.loop = false; }
       if (typeof i.displayName == 'undefined') { i.displayName = null; }
@@ -50,154 +45,190 @@ export default class MarioSoundboard {
         }
       }
 
-      //console.log(key + ': ' + i.fileName + '.' + i.format);
+    });
 
-      // set play|stop|end events...
-
-      if (i.play == null) {
-        if (i.sprite !== null && i.sprite.hasOwnProperty('loop') && i.sprite.hasOwnProperty('__default') ) {
-          // play the '__default' sprite (the intro), followed by the 'loop' sprite
-
-          i.clip = new Howl({
-            html5: true, // don't wait for the full file to be downloaded and decoded before playing
-            src: ['audio/' + i.fileName + '.' + i.format],
-            sprite: i.sprite,
-            onload: () => { this._soundLoaded(i); },
-          })
-
-          i.clip.on('play', () => {
-            i.isPlaying = true;
-            i.render();
-            this._initaliseProgressBar(i)
-          });
-
-          i.clip.on('stop', () => {
-            i.isPlaying = false;
-            i.isPlayingSpriteLoop = false;
-            i.render();
-            this._resetProgressBar(i);
-          });
-
-          i.clip.on('end', () => {
-            if (!i.isPlayingSpriteLoop) {
-              i.isPlayingSpriteLoop = true;
-              i.clip.play('loop');
-            }
-          });
-
-        } else if (i.count == 0) {
-          // single clip
-
-          i.clip = new Howl({
-            html5: true, // don't wait for the full file to be downloaded and decoded before playing
-            src: ['audio/' + i.fileName + '.' + i.format],
-            loop: i.loop,
-            sprite: i.sprite,
-            onload: () => { this._soundLoaded(i); },
-          })
-
-          i.clip.on('play', () => {
-            i.isPlaying = true;
-            i.render();
-            this._initaliseProgressBar(i)
-          });
-
-          i.clip.on('stop', () => {
-            i.isPlaying = false;
-            i.render();
-            this._resetProgressBar(i);
-          });
-
-          i.clip.on('end', () => {
-            if (this.activeMusicClip == i.clip) {
-              this.activeMusicClip = null;
-            }
-            i.isPlaying = false;
-            i.render();
-            this._clearProgressBar(i);
-          });
-
-        } else if (i.count >= 0) {
-          // mulitple clips
-
-          i.next = util.fillArrayWithNumbers(i.count);
-          i.clips = util.fillArrayWithNumbers(i.count);
-
-          i.next.forEach((set_value, set_key) => {
-
-            i.clips[set_key] = new Howl({
-              html5: true, // don't wait for the full file to be downloaded and decoded before playing
-              src: ['audio/' + i.fileName + '/' + set_value + '.' + i.format],
-              loop: i.loop
-            })
-
-            i.clips[set_key].on('play', () => {
-              i.isPlaying = true;
-              i.render();
-            });
-
-            i.clips[set_key].on('stop', () => {
-              i.isPlaying = false;
-              i.render();
-            });
-
-            i.clips[set_key].on('end', () => {
-              i.isPlaying = false;
-              i.render();
-            });
-
-          });
-
+    // initalise item groups
+    for (const j in this.items) {
+      const item = this.items[j];
+      let matchedGroup = null;
+      for (const g in this.itemGroups) {
+        if (this.itemGroups[g].doesItemBelongToGroup(item)) {
+          matchedGroup = g;
+          break;
         }
       }
+      if (matchedGroup == null) matchedGroup = 'other';
+      this.itemGroups[matchedGroup].items.push(item)
+      console.log(matchedGroup);
+    }
 
-      // create button wrapper
-      const btnWrapper = document.createElement("div");
-      btnWrapper.classList.add('btn-wrapper');
-      this.wrapper.appendChild(btnWrapper);
+    // create buttons for each item
+    for (const [key, value] of Object.entries(this.itemGroups)) {
 
-      // create the highlight behind the button
-      const btnRing = document.createElement("div");
-      btnRing.classList.add('btn-ring');
-      btnWrapper.appendChild(btnRing);
+      if (value.items.length == 0) { break; }
 
-      // create button
-      const btn = document.createElement("div");
-      i.btn = btn;
-      btn.classList.add('btn');
-      btn.onclick = () => {
-        this._play(key)
-      };
-      btnWrapper.appendChild(btn);
-
-      // set and load the img
-      if (i.imgFileName != null) {
-
-        btn.setAttribute('style', 'background-image: url(' + i.imgFileName + ')');
-
-        const el = new Image();
-        this.imgCount++;
-        el.onload = () => { this._imgLoaded(); }
-        el.src = i.imgFileName;
-
+      { // create heading
+        const el = document.createElement("h1");
+        el.textContent = key.toUpperCase();
+        this.wrapper.appendChild(el);
       }
 
-      // create title
-      if (i.displayName != null) {
-        const el = document.createElement("div");
-        el.classList.add('title');
-        el.innerHTML = i.displayName.toUpperCase();
-        btnWrapper.appendChild(el);
-      }
+      // create item grid
+      const itemGrid = document.createElement("div");
+      itemGrid.classList.add('item-grid');
+      this.wrapper.appendChild(itemGrid);
 
-      // create 'set' icon
-      if (i.count >= 1) {
-        const el = document.createElement("div");
-        el.classList.add('icon_set');
-        btn.appendChild(el);
-      }
+      // loop over each item in the group
+      Object.values(value.items).forEach((i) => {
 
-    });
+        // set play|stop|end events...
+
+        if (i.play == null) {
+          if (i.sprite !== null && i.sprite.hasOwnProperty('loop') && i.sprite.hasOwnProperty('__default') ) {
+            // play the '__default' sprite (the intro), followed by the 'loop' sprite
+
+            i.clip = new Howl({
+              html5: true, // don't wait for the full file to be downloaded and decoded before playing
+              src: ['audio/' + i.fileName + '.' + i.format],
+              sprite: i.sprite,
+              onload: () => { this._soundLoaded(i); },
+            })
+
+            i.clip.on('play', () => {
+              i.isPlaying = true;
+              i.render();
+              this._initaliseProgressBar(i)
+            });
+
+            i.clip.on('stop', () => {
+              i.isPlaying = false;
+              i.isPlayingSpriteLoop = false;
+              i.render();
+              this._resetProgressBar(i);
+            });
+
+            i.clip.on('end', () => {
+              if (!i.isPlayingSpriteLoop) {
+                i.isPlayingSpriteLoop = true;
+                i.clip.play('loop');
+              }
+            });
+
+          } else if (i.count == 0) {
+            // single clip
+
+            i.clip = new Howl({
+              html5: true, // don't wait for the full file to be downloaded and decoded before playing
+              src: ['audio/' + i.fileName + '.' + i.format],
+              loop: i.loop,
+              sprite: i.sprite,
+              onload: () => { this._soundLoaded(i); },
+            })
+
+            i.clip.on('play', () => {
+              i.isPlaying = true;
+              i.render();
+              this._initaliseProgressBar(i)
+            });
+
+            i.clip.on('stop', () => {
+              i.isPlaying = false;
+              i.render();
+              this._resetProgressBar(i);
+            });
+
+            i.clip.on('end', () => {
+              if (this.activeMusicClip == i.clip) {
+                this.activeMusicClip = null;
+              }
+              i.isPlaying = false;
+              i.render();
+              this._clearProgressBar(i);
+            });
+
+          } else if (i.count >= 0) {
+            // mulitple clips
+
+            i.next = util.fillArrayWithNumbers(i.count);
+            i.clips = util.fillArrayWithNumbers(i.count);
+
+            i.next.forEach((set_value, set_key) => {
+
+              i.clips[set_key] = new Howl({
+                html5: true, // don't wait for the full file to be downloaded and decoded before playing
+                src: ['audio/' + i.fileName + '/' + set_value + '.' + i.format],
+                loop: i.loop
+              })
+
+              i.clips[set_key].on('play', () => {
+                i.isPlaying = true;
+                i.render();
+              });
+
+              i.clips[set_key].on('stop', () => {
+                i.isPlaying = false;
+                i.render();
+              });
+
+              i.clips[set_key].on('end', () => {
+                i.isPlaying = false;
+                i.render();
+              });
+
+            });
+
+          }
+        }
+
+        // create button wrapper
+        const btnWrapper = document.createElement("div");
+        btnWrapper.classList.add('btn-wrapper');
+        itemGrid.appendChild(btnWrapper);
+
+        // create the highlight behind the button
+        const btnRing = document.createElement("div");
+        btnRing.classList.add('btn-ring');
+        btnWrapper.appendChild(btnRing);
+
+        // create button
+        const btn = document.createElement("div");
+        i.btn = btn;
+        btn.classList.add('btn');
+        btn.onclick = () => {
+          this._play(i)
+        };
+        btnWrapper.appendChild(btn);
+
+        // set and load the img
+        if (i.imgFileName != null) {
+
+          btn.setAttribute('style', 'background-image: url(' + i.imgFileName + ')');
+
+          const el = new Image();
+          this.imgCount++;
+          el.onload = () => { this._imgLoaded(); }
+          el.src = i.imgFileName;
+
+        }
+
+        // create title
+        if (i.displayName != null) {
+          const el = document.createElement("div");
+          el.classList.add('title');
+          el.innerHTML = i.displayName.toUpperCase();
+          btnWrapper.appendChild(el);
+        }
+
+        // create 'set' icon
+        if (i.count >= 1) {
+          const el = document.createElement("div");
+          el.classList.add('icon_set');
+          btn.appendChild(el);
+        }
+
+      });
+
+    }
 
   }
 
@@ -263,9 +294,9 @@ export default class MarioSoundboard {
     prog.querySelector('.foreground').style.strokeDashoffset = 100; // 0%
   }
 
-  _play(itemIndex) {
+  _play(i) {
 
-    const i = this.items[itemIndex];
+    console.log(i);
 
     // don't allow certain clips to play concurrently
     let preventConcurrent = [
@@ -312,7 +343,7 @@ export default class MarioSoundboard {
 
     // select new random clip
     if (i.count >= 1) {
-      let ranIndex = this._spin(itemIndex);
+      let ranIndex = this._spin(i);
       i.clip = i.clips[ranIndex];
     }
 
@@ -328,9 +359,7 @@ export default class MarioSoundboard {
 
   }
 
-  _spin(itemIndex) {
-
-    const i = this.items[itemIndex];
+  _spin(i) {
 
     // if we have played all the clips in the set, reset the set
     if (i.next.length == 0) {
