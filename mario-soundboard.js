@@ -22,8 +22,8 @@ export default class MarioSoundboard {
 
       if (typeof i.restartWhenClicked == 'undefined') { i.restartWhenClicked = true; } // if the clip is currently playing when the btn is clicked, restart the clip, otherwise stop it
       if (typeof i.isMusic == 'undefined') { i.isMusic = false; }
-      if (typeof i.count == 'undefined') { i.count = 0; }  // number of clips in the set
-      if (typeof i.loop == 'undefined') { i.loop = false; }
+      if (typeof i.clipCount == 'undefined') { i.clipCount = 0; }  // number of clips in the set
+      if (typeof i.loop == 'undefined') { i.loop = false; }  // loop the clip
       if (typeof i.displayName == 'undefined') { i.displayName = null; }
       if (typeof i.play == 'undefined') { i.play = null; }
       if (typeof i.format == 'undefined') { i.format = 'mp3'; }
@@ -118,8 +118,7 @@ export default class MarioSoundboard {
               }
             });
 
-          } else if (i.count == 0) {
-            // single clip
+          } else if (i.clipCount == 0) { // single clip
 
             i.clip = new Howl({
               html5: true, // don't wait for the full file to be downloaded and decoded before playing
@@ -150,11 +149,10 @@ export default class MarioSoundboard {
               this._clearProgressBar(i);
             });
 
-          } else if (i.count >= 0) {
-            // mulitple clips
+          } else if (i.clipCount >= 0) { // mulitple clips
 
-            i.next = util.fillArrayWithNumbers(i.count);
-            i.clips = util.fillArrayWithNumbers(i.count);
+            i.next = util.fillArrayWithNumbers(i.clipCount);
+            i.clips = util.fillArrayWithNumbers(i.clipCount);
 
             i.next.forEach((set_value, set_key) => {
 
@@ -224,7 +222,7 @@ export default class MarioSoundboard {
         }
 
         // create 'set' icon
-        if (i.count >= 1) {
+        if (i.clipCount >= 1) {
           const el = document.createElement("div");
           el.classList.add('icon_set');
           btn.appendChild(el);
@@ -346,7 +344,7 @@ export default class MarioSoundboard {
     }
 
     // select new random clip
-    if (i.count >= 1) {
+    if (i.clipCount >= 1) {
       let ranIndex = this._spin(i);
       i.clip = i.clips[ranIndex];
     }
@@ -367,7 +365,7 @@ export default class MarioSoundboard {
 
     // if we have played all the clips in the set, reset the set
     if (i.next.length == 0) {
-      i.next = util.fillArrayWithNumbers(i.count);
+      i.next = util.fillArrayWithNumbers(i.clipCount);
     }
 
     // selecet a random item

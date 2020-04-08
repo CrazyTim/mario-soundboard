@@ -1,10 +1,10 @@
 export default {
   'sound effects': {
-    'doesItemBelongToGroup': (i) => {return i.count == 0 && !i.isMusic},
+    'doesItemBelongToGroup': (i) => {return i.clipCount == 0 && !i.isMusic},
     'items': [],
   },
   'characters': {
-    'doesItemBelongToGroup': (i) => {return i.count > 0},
+    'doesItemBelongToGroup': (i) => {return i.clipCount > 0},
     'items': [],
   },
   'music': {
