@@ -269,17 +269,6 @@ export default [
     displayName: 'cannon fire',
   },
   {
-    fileName: 'chain-chomp',
-    displayName: 'chain chomp',
-    count: 5,
-  },
-  {
-    fileName: 'piranha-plant',
-    displayName: 'piranha plant',
-    format: 'ogg',
-    count: 2,
-  },
-  {
     fileName: 'mario',
     displayName: 'mario',
     count: 12,
@@ -341,6 +330,17 @@ export default [
     fileName: 'toad',
     displayName: 'toad',
     count: 4,
+  },
+  {
+    fileName: 'chain-chomp',
+    displayName: 'chain chomp',
+    count: 5,
+  },
+  {
+    fileName: 'piranha-plant',
+    displayName: 'piranha plant',
+    format: 'ogg',
+    count: 2,
   },
   {
     fileName: 'music-smb3-overworld',
