@@ -6,13 +6,13 @@ export default class MarioSoundboard {
 
   constructor() {
 
-    this.container = document.querySelector("#content-wrapper");
+    this.container = document.querySelector('#content-wrapper');
     this.container.classList.add('hidden');
-    this.loading_wrapper = document.querySelector("#loading-wrapper");
-    this.wrapper = document.querySelector("#item-wrapper");
+    this.loading_wrapper = document.querySelector('#loading-wrapper');
+    this.wrapper = document.querySelector('#item-wrapper');
 
     this.items = items;
-    this.itemGroups = itemGroups;
+    this.itemGroups = itemGroups;     // group items under a heading
     this.activeMusicClip = null;      // don't allow playing more than one 'music' clip at a time
     this.imgCount = 0;                // number of images we are loading
     this.imgLoadedCount = 0;          // number of images we have loaded so far
@@ -21,21 +21,25 @@ export default class MarioSoundboard {
     Object.values(this.items).forEach((i) => {
 
       if (typeof i.restartWhenClicked == 'undefined') { i.restartWhenClicked = true; } // if the clip is currently playing when the btn is clicked, restart the clip, otherwise stop it
-      if (typeof i.isMusic == 'undefined') { i.isMusic = false; }
-      if (typeof i.clipCount == 'undefined') { i.clipCount = 0; }  // number of clips in the set
-      if (typeof i.loop == 'undefined') { i.loop = false; }  // loop the clip
+      if (typeof i.isMusic == 'undefined') { i.isMusic = false; }    // only one music clip is allowed to play at a time
+      if (typeof i.clipCount == 'undefined') { i.clipCount = 0; }    // number of clips in the set
+      if (typeof i.loop == 'undefined') { i.loop = false; }          // loop the clip
       if (typeof i.title == 'undefined') { i.title = null; }
-      if (typeof i.play == 'undefined') { i.play = null; }
-      if (typeof i.format == 'undefined') { i.format = 'mp3'; }
-      if (typeof i.sprite == 'undefined') { i.sprite = null; }
+      if (typeof i.play == 'undefined') { i.play = null; }           // custom play function
+      if (typeof i.stop == 'undefined') { i.stop = null; }           // custom stop function
+      if (typeof i.format == 'undefined') { i.format = 'mp3'; }      // specify file format
+      if (typeof i.sprite == 'undefined') { i.sprite = null; }       // howler sprite
+
       if (typeof i.imgFileName == 'undefined') {
-        i.imgFileName = 'img/items/' + i.fileName + '.png';
+        i.imgFileName = 'img/items/' + i.fileName + '.png'; // guess the file name
       } else if (i.imgFileName != null) {
-        i.imgFileName = 'img/items/' + i.imgFileName;
+        i.imgFileName = 'img/items/' + i.imgFileName; // image has been specified
+      } else {
+        // image is null
       }
 
-      i.isPlaying = false;
-      i.isPlayingSpriteLoop = false; // we have finished playing the 'intro' sprite and we are now playing the 'loop' sprite
+      i.isPlaying = false;              // true if the item is playing a sound
+      i.isPlayingSpriteLoop = false;    // true if we have finished playing the '__default' sprite and we are now playing the 'loop' sprite
 
       i.render = () => {
         if (i.isPlaying) {
@@ -45,7 +49,7 @@ export default class MarioSoundboard {
         }
       }
 
-      i.willLoop = () => {
+      i.willLoop = () => { // true if the item will loop
         return (i.sprite?.['loop'][2] == true || i.sprite?.['__default'][2] == true || i.loop);
       }
 
@@ -63,7 +67,7 @@ export default class MarioSoundboard {
       }
       if (matchedGroup == null) matchedGroup = 'other';
       this.itemGroups[matchedGroup].items.push(item)
-      console.log(matchedGroup);
+      //console.log(matchedGroup);
     }
 
     // create buttons for each item
@@ -72,13 +76,13 @@ export default class MarioSoundboard {
       if (value.items.length == 0) { break; }
 
       { // create heading
-        const el = document.createElement("h1");
+        const el = document.createElement('h1');
         el.textContent = key.toUpperCase();
         this.wrapper.appendChild(el);
       }
 
       // create item grid
-      const itemGrid = document.createElement("div");
+      const itemGrid = document.createElement('div');
       itemGrid.classList.add('item-grid');
       this.wrapper.appendChild(itemGrid);
 
@@ -183,17 +187,18 @@ export default class MarioSoundboard {
         }
 
         // create button wrapper
-        const btnWrapper = document.createElement("div");
+        const btnWrapper = document.createElement('div');
         btnWrapper.classList.add('btn-wrapper');
         itemGrid.appendChild(btnWrapper);
 
-        // create the highlight behind the button
-        const btnRing = document.createElement("div");
-        btnRing.classList.add('btn-ring');
-        btnWrapper.appendChild(btnRing);
+        { // create the ring behind the button
+          const el = document.createElement('div');
+          el.classList.add('btn-ring');
+          btnWrapper.appendChild(el);
+        }
 
         // create button
-        const btn = document.createElement("div");
+        const btn = document.createElement('div');
         i.btn = btn;
         btn.classList.add('btn');
         btn.onclick = () => {
@@ -215,7 +220,7 @@ export default class MarioSoundboard {
 
         // create title
         if (i.title != null) {
-          const el = document.createElement("div");
+          const el = document.createElement('div');
           el.classList.add('title');
           el.innerHTML = i.title.toUpperCase();
           btnWrapper.appendChild(el);
@@ -223,7 +228,7 @@ export default class MarioSoundboard {
 
         // create 'set' icon
         if (i.clipCount >= 1) {
-          const el = document.createElement("div");
+          const el = document.createElement('div');
           el.classList.add('icon_set');
           btn.appendChild(el);
         }
@@ -248,7 +253,7 @@ export default class MarioSoundboard {
   _soundLoaded(i) {
     if(i.clip.duration() <= 0.5) return;
     // create progress bar
-    const el = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+    const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     el.setAttribute('viewBox', '0 0 36 36');
     el.classList.add('progress-bar');
     el.innerHTML = `<circle class='foreground' r='16' cx='18' cy='18'  stroke-dasharray='100.53096 100.53096'/>`;
@@ -298,7 +303,6 @@ export default class MarioSoundboard {
 
   _play(i) {
 
-    console.log(i);
 
     // don't allow certain clips to play concurrently
     let preventConcurrent = [

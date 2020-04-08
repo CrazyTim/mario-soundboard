@@ -60,10 +60,6 @@ h1 {
   z-index: 3;
 }
 
-.btn-wrapper.playing .btn {
-  /* transform: scale(0.95); */
-}
-
 .btn-ring {
   position: absolute;
   height: 77px;
@@ -85,7 +81,6 @@ h1 {
   width: 77px;
   height: 77px;
   z-index: 2;
-  pointer-events: none;
   opacity: 0;
   transition: opacity .1s;
 }
