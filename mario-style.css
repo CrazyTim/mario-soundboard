@@ -22,6 +22,10 @@ h1 {
   margin: 0;
 }
 
+.hidden {
+  display: none !important;
+}
+
 #content-wrapper {
   display: grid;
   /* grid-template-rows: auto 1fr; */
@@ -105,10 +109,6 @@ h1 {
   z-index: 1;
   bottom: -1px;
   left: 23px;
-}
-
-.hidden, #loading-wrapper.hidden, #mario-wrapper.hidden {
-  display: none;
 }
 
 .title {
