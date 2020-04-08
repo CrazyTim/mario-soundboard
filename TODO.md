@@ -12,4 +12,6 @@
 - Missing icons.
 - Rosalina sounds are too quiet compared to the others.
 - Should combine 'game over' music and the 'death' sound effect?
-- Can't play .ogg files on safari.
+- Can't play .ogg files on safari. Howler recommends webm and mp3.
+  - Change all .oog files to mp3.
+  - Then make a second copy of all sounds as webm using [ffmpeg](https://github.com/goldfire/howler.js#format-recommendations)
