@@ -24,7 +24,7 @@ export default class MarioSoundboard {
       if (typeof i.isMusic == 'undefined') { i.isMusic = false; }
       if (typeof i.clipCount == 'undefined') { i.clipCount = 0; }  // number of clips in the set
       if (typeof i.loop == 'undefined') { i.loop = false; }  // loop the clip
-      if (typeof i.displayName == 'undefined') { i.displayName = null; }
+      if (typeof i.title == 'undefined') { i.title = null; }
       if (typeof i.play == 'undefined') { i.play = null; }
       if (typeof i.format == 'undefined') { i.format = 'mp3'; }
       if (typeof i.sprite == 'undefined') { i.sprite = null; }
@@ -214,10 +214,10 @@ export default class MarioSoundboard {
         }
 
         // create title
-        if (i.displayName != null) {
+        if (i.title != null) {
           const el = document.createElement("div");
           el.classList.add('title');
-          el.innerHTML = i.displayName.toUpperCase();
+          el.innerHTML = i.title.toUpperCase();
           btnWrapper.appendChild(el);
         }
 
