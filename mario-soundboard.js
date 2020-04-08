@@ -45,6 +45,10 @@ export default class MarioSoundboard {
         }
       }
 
+      i.willLoop = () => {
+        return (i.sprite?.['loop'][2] == true || i.sprite?.['__default'][2] == true || i.loop);
+      }
+
     });
 
     // initalise item groups
@@ -138,7 +142,7 @@ export default class MarioSoundboard {
             });
 
             i.clip.on('end', () => {
-              if (this.activeMusicClip == i.clip) {
+              if (!i.willLoop() && this.activeMusicClip == i.clip) {
                 this.activeMusicClip = null;
               }
               i.isPlaying = false;
