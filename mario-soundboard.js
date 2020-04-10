@@ -145,12 +145,14 @@ export default class MarioSoundboard {
             });
 
             i.clip.on('end', () => {
-              if (!i.willLoop() && this.activeMusicClip == i.clip) {
-                this.activeMusicClip = null;
+              if (!i.willLoop()) { // don't update state if the sound is expected to loop (this event will fire each loop)
+                if (this.activeMusicClip == i.clip) {
+                  this.activeMusicClip = null;
+                }
+                i.isPlaying = false;
+                i.render();
+                this._clearProgressBar(i);
               }
-              i.isPlaying = false;
-              i.render();
-              this._clearProgressBar(i);
             });
 
           } else if (i.clipCount >= 0) { // mulitple clips
