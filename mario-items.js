@@ -1,7 +1,5 @@
 import {getRandomInt} from './mario-util.js'
 
-const END_OF_FILE = 9999999;
-
 export default [
   {
     fileName: 'coin',
