@@ -6,19 +6,22 @@ export default class MarioSoundboard {
 
   constructor() {
 
-    this.container = document.querySelector('#content-wrapper');
-    this.container.classList.add('hidden');
-    this.loading_wrapper = document.querySelector('#loading-wrapper');
-    this.wrapper = document.querySelector('#item-wrapper');
+    this.contentWrapper = document.querySelector('#content-wrapper');
+    this.loadingWrapper = document.querySelector('#loading-wrapper');
+    this.itemWrapper = document.querySelector('#item-wrapper');
 
-    this.items = items;
-    this.itemGroups = itemGroups;     // group items under a heading
-    this.activeMusicClip = null;      // don't allow playing more than one 'music' clip at a time
-    this.imgCount = 0;                // number of images we are loading
-    this.imgLoadedCount = 0;          // number of images we have loaded so far
+    this.state = {
+        items,                      // array of item objects
+        itemGroups,                 // hash of group objects
+        'activeMusicClip': null,    // don't allow playing more than one 'music' clip at a time
+        'imgCount': 0,              // number of images that need to be loaded
+        'imgLoadedCount': 0,        // number of images that are loaded
+    };
+
+    this.contentWrapper.classList.add('hidden');
 
      // set default values for each item if undefined
-    Object.values(this.items).forEach((i) => {
+    Object.values(this.state.items).forEach((i) => {
 
       if (typeof i.restartWhenClicked == 'undefined') { i.restartWhenClicked = true; } // if the clip is currently playing when the btn is clicked, restart the clip, otherwise stop it
       if (typeof i.isMusic == 'undefined') { i.isMusic = false; }    // only one music clip is allowed to play at a time
@@ -56,41 +59,39 @@ export default class MarioSoundboard {
     });
 
     // initalise item groups
-    for (const j in this.items) {
-      const item = this.items[j];
+    this.state.items.forEach(item => {
       let matchedGroup = null;
-      for (const g in this.itemGroups) {
-        if (this.itemGroups[g].doesItemBelongToGroup(item)) {
+      for (const g in this.state.itemGroups) {
+        if (this.state.itemGroups[g].doesItemBelongToGroup(item)) {
           matchedGroup = g;
           break;
         }
       }
       if (matchedGroup == null) matchedGroup = 'other';
-      this.itemGroups[matchedGroup].items.push(item)
+      this.state.itemGroups[matchedGroup].items.push(item)
       //console.log(matchedGroup);
-    }
+    });
 
-    // create buttons for each item
-    for (const [key, value] of Object.entries(this.itemGroups)) {
+    // create dom elements for each group
+    for (const [key, value] of Object.entries(this.state.itemGroups)) {
 
       if (value.items.length == 0) { break; }
 
       { // create heading
         const el = document.createElement('h1');
         el.textContent = key.toUpperCase();
-        this.wrapper.appendChild(el);
+        this.itemWrapper.appendChild(el);
       }
 
       // create item grid
       const itemGrid = document.createElement('div');
       itemGrid.classList.add('item-grid');
-      this.wrapper.appendChild(itemGrid);
+      this.itemWrapper.appendChild(itemGrid);
 
-      // loop over each item in the group
+      // create dom elements for each item
       Object.values(value.items).forEach((i) => {
 
-        // set play|stop|end events...
-
+        // define play|stop|end events
         if (i.play == null) {
           if (i.sprite !== null && i.sprite.hasOwnProperty('loop') && i.sprite.hasOwnProperty('__default') ) {
             // play the '__default' sprite (the intro), followed by the 'loop' sprite
@@ -146,8 +147,8 @@ export default class MarioSoundboard {
 
             i.clip.on('end', () => {
               if (!i.willLoop()) { // don't update state if the sound is expected to loop (this event will fire each loop)
-                if (this.activeMusicClip == i.clip) {
-                  this.activeMusicClip = null;
+                if (this.state.activeMusicClip == i.clip) {
+                  this.state.activeMusicClip = null;
                 }
                 i.isPlaying = false;
                 i.render();
@@ -214,7 +215,7 @@ export default class MarioSoundboard {
           btn.setAttribute('style', 'background-image: url(' + i.imgFileName + ')');
 
           const el = new Image();
-          this.imgCount++;
+          this.state.imgCount++;
           el.onload = () => { this._imgLoaded(); }
           el.src = i.imgFileName;
 
@@ -243,12 +244,12 @@ export default class MarioSoundboard {
 
   _imgLoaded() {
 
-    this.imgLoadedCount++;
+    this.state.imgLoadedCount++;
 
     // hide the loading icon once all images have loaded
-    if (this.imgLoadedCount === this.imgCount) {
-      this.loading_wrapper.classList.add('hidden');
-      this.container.classList.remove('hidden');
+    if (this.state.imgLoadedCount === this.state.imgCount) {
+      this.loadingWrapper.classList.add('hidden');
+      this.contentWrapper.classList.remove('hidden');
     }
   }
 
@@ -305,7 +306,6 @@ export default class MarioSoundboard {
 
   _play(i) {
 
-
     // don't allow certain clips to play concurrently
     let preventConcurrent = [
       ['mega-mushroom', 'super-star','wing-cap'],
@@ -313,7 +313,7 @@ export default class MarioSoundboard {
 
     preventConcurrent.forEach(arr => {
       if (arr.includes(i.fileName)) {
-         this.items.forEach(item => {
+         this.state.items.forEach(item => {
            if (item !== i && arr.includes(item.fileName)) {
              item.clip.stop();
            }
@@ -321,16 +321,16 @@ export default class MarioSoundboard {
       }
     });
 
-    if (i.isMusic && this.activeMusicClip != null && this.activeMusicClip !== i.clip) {
-      this.activeMusicClip.stop(); // stop playing prev music
-      this.activeMusicClip = null;
+    if (i.isMusic && this.state.activeMusicClip != null && this.state.activeMusicClip !== i.clip) {
+      this.state.activeMusicClip.stop(); // stop playing prev music
+      this.state.activeMusicClip = null;
     }
 
     // stop the clip if it is currently playing
     if (i.isPlaying) {
 
-      if (this.activeMusicClip == i.clip) {
-        this.activeMusicClip = null;
+      if (this.state.activeMusicClip == i.clip) {
+        this.state.activeMusicClip = null;
       }
 
       if (i.restartWhenClicked) {
@@ -362,7 +362,7 @@ export default class MarioSoundboard {
     }
 
     if (i.isMusic) {
-      this.activeMusicClip = i.clip;
+      this.state.activeMusicClip = i.clip;
     }
 
   }
