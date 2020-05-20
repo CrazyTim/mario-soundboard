@@ -11,9 +11,14 @@ Its a small showcase of the amazing sounds and icons of the Mario franchise.
 
 View the [live version here](https://crazytim.github.io/mario-soundboard/).
 
+## Limitations
+
+- We need to pre-load audio so sounds will play instantly as soon as they are clicked (with no buffering or loading). A good way to do this is to begin loading all audio async when the app loads and disable each button until it's audio has loaded. `HTML5 Audio` doesn't guarantee pre-load, so we must use `Web Audio API`.
+- `Mp3` files can't loop seamlessly (see [reddit](https://www.reddit.com/r/html5/comments/2kd16q/seamless_looping_html5_audio/), [stackoverflow](https://stackoverflow.com/questions/7330023/gapless-looping-audio-html5), and [here](https://www.kevssite.com/seamless-audio-looping/)), so another format needs to be used for looping sounds, such as `WebM` or `Ogg`. Refer to MDN for more info about [audio codecs](https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Audio_codecs) and [containers](https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Containers).
+
 ## Acknowledgements
 
-### Audio
+### Audio from:
 - https://downloads.khinsider.com/mario
 - https://themushroomkingdom.net/media/
 - https://www.sounds-resource.com
@@ -21,7 +26,7 @@ View the [live version here](https://crazytim.github.io/mario-soundboard/).
 - https://mfgg.net
 - https://www.youtube.com/watch?v=sWDfNDKjj1Y
 
-### Images
+### Images from:
 - https://www.mariowiki.com
 - https://mario.fandom.com/wiki/MarioWiki
 - https://www.mariowiki.com
