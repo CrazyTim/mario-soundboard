@@ -1,0 +1,17 @@
+{
+  "name": "mario-soundboard",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "reload -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrazyTim/mario-soundboard.git"
+  },
+  "author": "CrazyTim",
+  "license": "MIT",
+  "homepage": "https://github.com/CrazyTim/mario-soundboard#readme",
+  "devDependencies": {
+    "reload": "^3.1.1"
+  }
+}
