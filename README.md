@@ -11,6 +11,15 @@ Its a small showcase of the amazing sounds and icons of the Mario franchise.
 
 View the [live version here](https://crazytim.github.io/mario-soundboard/).
 
+## Getting Started
+
+Host the files on a web server, or if you have Node.js run:
+
+```sh
+npm init
+npm start
+```
+
 ## Limitations
 
 - We need to pre-load audio so sounds will play instantly as soon as they are clicked (with no buffering or loading). A good way to do this is to begin loading all audio async when the app loads and disable each button until it's audio has loaded. `HTML5 Audio` doesn't guarantee pre-load, so we must use `Web Audio API`.
@@ -18,7 +27,7 @@ View the [live version here](https://crazytim.github.io/mario-soundboard/).
 
 ## Acknowledgements
 
-### Audio from:
+### Audio:
 - https://downloads.khinsider.com/mario
 - https://themushroomkingdom.net/media/
 - https://www.sounds-resource.com
@@ -26,7 +35,7 @@ View the [live version here](https://crazytim.github.io/mario-soundboard/).
 - https://mfgg.net
 - https://www.youtube.com/watch?v=sWDfNDKjj1Y
 
-### Images from:
+### Images:
 - https://www.mariowiki.com
 - https://mario.fandom.com/wiki/MarioWiki
 - https://www.mariowiki.com
